@@ -59,7 +59,7 @@ if [ -e ${BUILD_DIR}/Projfile ]; then
 	echo "found projfile project ${PROJECT_NAME} at ${PROJECT_FILE}"
 else
 	if [ -z ${PROJECT_FILE:-} ]; then
-		PROJECT_FILE=$(x=$(dirname $(find ${BUILD_DIR} -maxdepth 5 -iname Startup.cs | head -1)); while [[ "$x" =~ $BUILD_DIR ]] ; do find "$x" -maxdepth 1 -name *.csproj; x=`dirname "$x"`; done)
+		PROJECT_FILE=$(x=$(dirname $(find ${BUILD_DIR} -maxdepth 5 -iname Program.cs | head -1)); while [[ "$x" =~ $BUILD_DIR ]] ; do find "$x" -maxdepth 1 -name *.csproj; x=`dirname "$x"`; done)
 	fi
  	if [ -z ${PROJECT_NAME:-} ]; then
 		PROJECT_NAME=$(basename ${PROJECT_FILE%.*})
@@ -75,4 +75,5 @@ dotnet_cleanup $BUILD_DIR $CACHE_DIR
 
 cat << EOT >> ${BUILD_DIR}/Procfile
 web: cd \$HOME/heroku_output && ASPNETCORE_URLS='http://+:\$PORT' dotnet "./${PROJECT_NAME}.dll"
+dyno: cd $HOME/${PROJECT_NAME} && ls -l && ../heroku_output/${PROJECT_NAME}
 EOT
